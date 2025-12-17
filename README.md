@@ -25,4 +25,4 @@ pmc --help
 
 ### API Contract
 
-For details on the backend API endpoints and data structures that this CLI interacts with, please refer to the [API Contract Documentation](./docs/API_CONTRACT.md).
+For details on the backend API endpoints and data structures that this CLI interacts with, please refer to the [API Contract Documentation](https://github.com/Ajinkyap331/password-manager-cli/blob/main/docs/API_CONTRACT.md).
