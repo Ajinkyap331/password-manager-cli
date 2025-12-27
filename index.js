@@ -2,6 +2,7 @@
 
 import { Command } from "commander";
 import { init } from "./src/lib/commands.js";
+import { getPasswordByUrl } from "./src/lib/api.js";
 
 const program = new Command();
 

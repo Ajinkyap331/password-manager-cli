@@ -1,39 +1,31 @@
-import nodePersist from "node-persist";
 import os from "os";
 import path from "path";
-
-let isInitialized = false;
+import { JSONFilePreset } from "lowdb/node";
 
 const initStorage = async () => {
-  if (!isInitialized) {
-    const homeDirectory = os.homedir();
-    const storageDirectory = path.join(homeDirectory, ".config", "pmc");
+  const homeDirectory = os.homedir();
+  const storageDirectory = path.join(
+    homeDirectory,
+    ".config",
+    "pmc",
+    "passwords.json"
+  );
 
-    await nodePersist.init({
-      dir: storageDirectory,
-      logging: false,
-      ttl: false,
-    });
-    isInitialized = true;
-  }
+  const defaultData = { passwords: [] };
+  const db = await JSONFilePreset(storageDirectory, defaultData);
+
+  return db;
 };
 
-export const setItem = async (key, value) => {
-  await initStorage();
-  return nodePersist.setItem(key, value);
+export const addItem = async (password) => {
+  initStorage().then((db) =>
+    db.update(({ passwords }) => passwords.push(password))
+  );
 };
 
-export const getItem = async (key) => {
-  await initStorage();
-  return nodePersist.getItem(key);
-};
+export const getPasswords = async () => (await initStorage()).data.passwords;
 
-export const clear = async () => {
-  await initStorage();
-  return nodePersist.clear();
-};
-
-export const getHostIP = async () => {
-  await initStorage();
-  return nodePersist.getItem("host");
-};
+export const clear = async (indexToRemove) =>
+  initStorage().then((db) =>
+    db.update(({ passwords }) => passwords.splice(indexToRemove, 1))
+  );
