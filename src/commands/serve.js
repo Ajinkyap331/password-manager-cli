@@ -6,7 +6,7 @@ const PORT = 7474;
 export const serverCommands = (program) => {
   program
     .command("serve")
-    .description("list all passwords")
+    .description("Create a server to interact with UI")
     .action(startServer);
 };
 
