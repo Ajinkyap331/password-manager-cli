@@ -3,6 +3,7 @@ import {
   listPasswords,
   copyPassword,
   deletePassword,
+  updatePassword,
 } from "../services/passwordService.js";
 
 export const passwordCommands = (program) => {
@@ -30,4 +31,10 @@ export const passwordCommands = (program) => {
     .description("Delete Password")
     .argument("index", "index")
     .action(deletePassword);
+
+  program
+    .command("update")
+    .description("Update password entry")
+    .argument("index", "index")
+    .action((index) => updatePassword(index));
 };

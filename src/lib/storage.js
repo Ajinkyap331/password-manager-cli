@@ -105,3 +105,19 @@ export const clear = async (indexToRemove) => {
     });
   }
 };
+
+export const updateItem = async (indexToUpdate, updatedEntry) => {
+  const db = await initStorage();
+  if (!db.data.vault) return;
+
+  const masterPassword = await getMasterPassword();
+  let passwords = await decrypt(db.data.vault, masterPassword);
+
+  if (indexToUpdate >= 0 && indexToUpdate < passwords.length) {
+    passwords[indexToUpdate] = { ...passwords[indexToUpdate], ...updatedEntry };
+    const encryptedVault = await encrypt(passwords, masterPassword);
+    await db.update((data) => {
+      data.vault = encryptedVault;
+    });
+  }
+};

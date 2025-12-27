@@ -2,6 +2,7 @@ import {
   getAllPasswords,
   createPassword,
   deletePasswordByIndex,
+  updatePasswordByIndex,
 } from "../lib/api.js";
 import { copyToClipboard } from "../utils/clipboard.js";
 import { input, password as passwordPrompt } from "@inquirer/prompts";
@@ -58,5 +59,36 @@ export const deletePassword = async (index) => {
     } else console.error("Invalid index provided.");
   } catch (error) {
     console.error("Failed to delete password:", error.message);
+  }
+};
+
+export const updatePassword = async (index) => {
+  try {
+    const passwords = await getAllPasswords();
+
+    if (index >= 0 && index < passwords.length) {
+      const current = passwords[index];
+      const updates = {};
+
+      const newUsername = await input({
+        message: `Enter Username (leave empty to keep: ${current.username}):`,
+      });
+      if (newUsername) updates.username = newUsername;
+
+      const newPassword = await passwordPrompt({
+        message: "Enter New Password (leave empty to keep current):",
+        mask: "*",
+      });
+      if (newPassword) updates.password = newPassword;
+
+      if (Object.keys(updates).length > 0) {
+        await updatePasswordByIndex(index, updates);
+        console.log("Password entry updated successfully.");
+      } else {
+        console.log("No changes made.");
+      }
+    } else console.error("Invalid index provided.");
+  } catch (error) {
+    console.error("Failed to update password:", error.message);
   }
 };

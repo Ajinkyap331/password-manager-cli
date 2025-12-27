@@ -1,4 +1,4 @@
-import { addItem, clear, getPasswords } from "./storage.js";
+import { addItem, clear, getPasswords, updateItem } from "./storage.js";
 
 export const getAllPasswords = async () => await getPasswords();
 
@@ -18,4 +18,8 @@ export const createPassword = async (url, username, password) => {
 
 export const deletePasswordByIndex = async (index) => {
   await clear(index);
+};
+
+export const updatePasswordByIndex = async (index, updates) => {
+  await updateItem(index, updates);
 };
