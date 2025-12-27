@@ -14,9 +14,9 @@ export const passwordCommands = (program) => {
   program
     .command("add")
     .description("add a password")
-    .argument("url", "url")
-    .argument("username", "username")
-    .argument("password", "password")
+    .argument("[url]", "url")
+    .argument("[username]", "username")
+    .argument("[password]", "password")
     .action(addPassword);
 
   program

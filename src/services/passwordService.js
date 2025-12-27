@@ -4,10 +4,20 @@ import {
   deletePasswordByIndex,
 } from "../lib/api.js";
 import { copyToClipboard } from "../utils/clipboard.js";
+import { input, password as passwordPrompt } from "@inquirer/prompts";
 
 export const addPassword = async (url, username, password) => {
   try {
-    await createPassword(url, username, password);
+    const finalUrl =
+      url ||
+      (await input({ message: "Enter URL (e.g., google.com):" }));
+    const finalUsername =
+      username || (await input({ message: "Enter Username:" }));
+    const finalPassword =
+      password ||
+      (await passwordPrompt({ message: "Enter Password:", mask: "*" }));
+
+    await createPassword(finalUrl, finalUsername, finalPassword);
     console.log("Password added successfully.");
   } catch (error) {
     console.error("Failed to add password:", error.message);
