@@ -1,8 +1,40 @@
 import os from "os";
 import path from "path";
 import { JSONFilePreset } from "lowdb/node";
-import { password as passwordPrompt } from "@inquirer/prompts";
+import { password as passwordPrompt, confirm } from "@inquirer/prompts";
 import { encrypt, decrypt } from "../utils/crypto.js";
+import keytar from "keytar";
+
+const SERVICE_NAME = "PMC-CLI";
+const ACCOUNT_NAME = "MasterPassword";
+
+const getMasterPassword = async (isNew = false) => {
+  if (!isNew) {
+    const storedPassword = await keytar.getPassword(SERVICE_NAME, ACCOUNT_NAME);
+    if (storedPassword) {
+      return storedPassword;
+    }
+  }
+
+  const masterPassword = await passwordPrompt({
+    message: isNew
+      ? "Create a new Master Password for your vault:"
+      : "Enter your Master Password to unlock the vault:",
+    mask: "*",
+  });
+
+  const shouldSave = await confirm({
+    message: "Save Master Password to System Keychain?",
+    default: true,
+  });
+
+  if (shouldSave) {
+    await keytar.setPassword(SERVICE_NAME, ACCOUNT_NAME, masterPassword);
+    console.log("Master Password saved to System Keychain.");
+  }
+
+  return masterPassword;
+};
 
 const initStorage = async () => {
   const homeDirectory = os.homedir();
@@ -23,12 +55,7 @@ export const addItem = async (newPasswordEntry) => {
   const db = await initStorage();
   const isNew = !db.data.vault;
 
-  const masterPassword = await passwordPrompt({
-    message: isNew
-      ? "Create a new Master Password for your vault:"
-      : "Enter your Master Password to unlock the vault:",
-    mask: "*",
-  });
+  const masterPassword = await getMasterPassword(isNew);
 
   let passwords = [];
   if (!isNew) {
@@ -50,15 +77,15 @@ export const getPasswords = async () => {
     return [];
   }
 
-  const masterPassword = await passwordPrompt({
-    message: "Enter your Master Password to unlock the vault:",
-    mask: "*",
-  });
+  const masterPassword = await getMasterPassword();
 
   try {
     return await decrypt(db.data.vault, masterPassword);
   } catch (error) {
-    console.error(error.message);
+    console.error("Decryption failed. " + error.message);
+    // If decryption fails, maybe the keychain password is wrong/stale?
+    // Optionally delete it so the user can re-enter.
+    await keytar.deletePassword(SERVICE_NAME, ACCOUNT_NAME);
     process.exit(1);
   }
 };
@@ -67,11 +94,7 @@ export const clear = async (indexToRemove) => {
   const db = await initStorage();
   if (!db.data.vault) return;
 
-  const masterPassword = await passwordPrompt({
-    message: "Enter your Master Password to unlock the vault:",
-    mask: "*",
-  });
-
+  const masterPassword = await getMasterPassword();
   let passwords = await decrypt(db.data.vault, masterPassword);
 
   if (indexToRemove >= 0 && indexToRemove < passwords.length) {
