@@ -1,7 +1,7 @@
 import {
   getAllPasswords,
   createPassword,
-  deletePasswordById,
+  deletePasswordByIndex,
 } from "../lib/api.js";
 import { copyToClipboard } from "../utils/clipboard.js";
 
@@ -42,8 +42,8 @@ export const deletePassword = async (index) => {
     const passwords = await getAllPasswords();
 
     if (index >= 0 && index < passwords.length) {
-      const passwordId = passwords[index].id;
-      await deletePasswordById(passwordId);
+      await deletePasswordByIndex(index);
+
       console.log("Password deleted successfully.");
     } else console.error("Invalid index provided.");
   } catch (error) {

@@ -13,9 +13,9 @@ export const createPassword = async (url, username, password) => {
     username: username,
     password: password,
   };
-  addItem(passwordMapping);
+  await addItem(passwordMapping);
 };
 
-export const deletePasswordById = async (id) => {
-  clear(id);
+export const deletePasswordByIndex = async (index) => {
+  await clear(index);
 };
