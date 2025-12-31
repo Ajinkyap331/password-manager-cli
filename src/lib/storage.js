@@ -1,5 +1,5 @@
 import { password as passwordPrompt, confirm } from "@inquirer/prompts";
-import { encrypt, decrypt } from "../utils/crypto.js";
+import { vaultEncryption } from "../utils/crypto.js";
 import keytar from "keytar";
 import {
   getMasterPasswordPrompt,
@@ -47,12 +47,12 @@ export const addItem = async (newPasswordEntry) => {
 
   let passwords = [];
   if (!isNew) {
-    passwords = await decrypt(db.data.vault, masterPassword);
+    passwords = await vaultEncryption.decrypt(db.data.vault, masterPassword);
   }
 
   passwords.push(newPasswordEntry);
 
-  const encryptedVault = await encrypt(passwords, masterPassword);
+  const encryptedVault = await vaultEncryption.encrypt(passwords, masterPassword);
   await db.update((data) => {
     data.vault = encryptedVault;
   });
@@ -68,7 +68,7 @@ export const getPasswords = async () => {
   const masterPassword = await getMasterPassword();
 
   try {
-    return await decrypt(db.data.vault, masterPassword);
+    return await vaultEncryption.decrypt(db.data.vault, masterPassword);
   } catch (error) {
     if (error instanceof DecryptionError) {
       await keytar.deletePassword(SERVICE_NAME, ACCOUNT_NAME);
@@ -85,11 +85,11 @@ export const clear = async (indexToRemove) => {
   if (!db.data.vault) return;
 
   const masterPassword = await getMasterPassword();
-  let passwords = await decrypt(db.data.vault, masterPassword);
+  let passwords = await vaultEncryption.decrypt(db.data.vault, masterPassword);
 
   if (indexToRemove >= 0 && indexToRemove < passwords.length) {
     passwords.splice(indexToRemove, 1);
-    const encryptedVault = await encrypt(passwords, masterPassword);
+    const encryptedVault = await vaultEncryption.encrypt(passwords, masterPassword);
     await db.update((data) => {
       data.vault = encryptedVault;
     });
@@ -101,11 +101,11 @@ export const updateItem = async (indexToUpdate, updatedEntry) => {
   if (!db.data.vault) return;
 
   const masterPassword = await getMasterPassword();
-  let passwords = await decrypt(db.data.vault, masterPassword);
+  let passwords = await vaultEncryption.decrypt(db.data.vault, masterPassword);
 
   if (indexToUpdate >= 0 && indexToUpdate < passwords.length) {
     passwords[indexToUpdate] = { ...passwords[indexToUpdate], ...updatedEntry };
-    const encryptedVault = await encrypt(passwords, masterPassword);
+    const encryptedVault = await vaultEncryption.encrypt(passwords, masterPassword);
     await db.update((data) => {
       data.vault = encryptedVault;
     });
