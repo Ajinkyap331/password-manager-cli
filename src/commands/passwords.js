@@ -1,6 +1,6 @@
 import {
-  addPassword,
   listPasswords,
+  addPassword,
   copyPassword,
   deletePassword,
   updatePassword,
@@ -36,5 +36,5 @@ export const passwordCommands = (program) => {
     .command("update")
     .description("Update password entry")
     .argument("index", "index")
-    .action((index) => updatePassword(index));
+    .action(updatePassword);
 };

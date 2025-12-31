@@ -4,6 +4,10 @@ import { JSONFilePreset } from "lowdb/node";
 import { password as passwordPrompt, confirm } from "@inquirer/prompts";
 import { encrypt, decrypt } from "../utils/crypto.js";
 import keytar from "keytar";
+import {
+  getMasterPasswordPrompt,
+  saveToKeychainPrompt,
+} from "../utils/prompts.js";
 
 const SERVICE_NAME = "PMC-CLI";
 const ACCOUNT_NAME = "MasterPassword";
@@ -16,17 +20,9 @@ const getMasterPassword = async (isNew = false) => {
     }
   }
 
-  const masterPassword = await passwordPrompt({
-    message: isNew
-      ? "Create a new Master Password for your vault:"
-      : "Enter your Master Password to unlock the vault:",
-    mask: "*",
-  });
+  const masterPassword = await passwordPrompt(getMasterPasswordPrompt(isNew));
 
-  const shouldSave = await confirm({
-    message: "Save Master Password to System Keychain?",
-    default: true,
-  });
+  const shouldSave = await confirm(saveToKeychainPrompt);
 
   if (shouldSave) {
     await keytar.setPassword(SERVICE_NAME, ACCOUNT_NAME, masterPassword);
