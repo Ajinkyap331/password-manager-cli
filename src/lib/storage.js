@@ -78,11 +78,8 @@ export const getPasswords = async () => {
   try {
     return await decrypt(db.data.vault, masterPassword);
   } catch (error) {
-    console.error("Decryption failed. " + error.message);
-    // If decryption fails, maybe the keychain password is wrong/stale?
-    // Optionally delete it so the user can re-enter.
     await keytar.deletePassword(SERVICE_NAME, ACCOUNT_NAME);
-    process.exit(1);
+    throw new Error("Decryption failed. The master password may be incorrect or the vault is corrupted. Stored keychain password has been cleared.");
   }
 };
 
