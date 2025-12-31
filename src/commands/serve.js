@@ -22,8 +22,12 @@ app.get("/password", async (req, res) => {
   }
 });
 
-const startServer = () => {
-  app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
-  });
+const startServer = async () => {
+  try {
+    app.listen(PORT, "127.0.0.1", () => {
+      console.log(`Server running at http://127.0.0.1:${PORT}/`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error.message);
+  }
 };
