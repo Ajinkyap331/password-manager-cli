@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { promisify } from "util";
+import { DecryptionError } from "./errors.js";
 
 const pbkdf2 = promisify(crypto.pbkdf2);
 
@@ -49,6 +50,6 @@ export const decrypt = async (vault, password) => {
     ]);
     return JSON.parse(decrypted.toString("utf8"));
   } catch (error) {
-    throw new Error("Invalid master password or corrupted data.");
+    throw new DecryptionError("Invalid master password or corrupted data.");
   }
 };

@@ -12,6 +12,7 @@ import {
   STORAGE_DIRECTORY,
   DEFAULT_DATA,
 } from "../config.js";
+import { DecryptionError } from "../utils/errors.js";
 
 const getMasterPassword = async (isNew = false) => {
   if (!isNew) {
@@ -69,8 +70,13 @@ export const getPasswords = async () => {
   try {
     return await decrypt(db.data.vault, masterPassword);
   } catch (error) {
-    await keytar.deletePassword(SERVICE_NAME, ACCOUNT_NAME);
-    throw new Error("Decryption failed. The master password may be incorrect or the vault is corrupted. Stored keychain password has been cleared.");
+    if (error instanceof DecryptionError) {
+      await keytar.deletePassword(SERVICE_NAME, ACCOUNT_NAME);
+      throw new DecryptionError(
+        "Decryption failed. The master password may be incorrect or the vault is corrupted. Stored keychain password has been cleared."
+      );
+    }
+    throw error;
   }
 };
 
