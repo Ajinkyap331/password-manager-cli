@@ -1,6 +1,3 @@
-import os from "os";
-import path from "path";
-import { JSONFilePreset } from "lowdb/node";
 import { password as passwordPrompt, confirm } from "@inquirer/prompts";
 import { encrypt, decrypt } from "../utils/crypto.js";
 import keytar from "keytar";
@@ -8,9 +5,13 @@ import {
   getMasterPasswordPrompt,
   saveToKeychainPrompt,
 } from "../utils/prompts.js";
-
-const SERVICE_NAME = "PMC-CLI";
-const ACCOUNT_NAME = "MasterPassword";
+import { JSONFilePreset } from "lowdb/node";
+import {
+  SERVICE_NAME,
+  ACCOUNT_NAME,
+  STORAGE_DIRECTORY,
+  DEFAULT_DATA,
+} from "../config.js";
 
 const getMasterPassword = async (isNew = false) => {
   if (!isNew) {
@@ -33,17 +34,7 @@ const getMasterPassword = async (isNew = false) => {
 };
 
 const initStorage = async () => {
-  const homeDirectory = os.homedir();
-  const storageDirectory = path.join(
-    homeDirectory,
-    ".config",
-    "pmc",
-    "passwords.json"
-  );
-
-  const defaultData = { vault: null };
-  const db = await JSONFilePreset(storageDirectory, defaultData);
-
+  const db = await JSONFilePreset(STORAGE_DIRECTORY, DEFAULT_DATA);
   return db;
 };
 
