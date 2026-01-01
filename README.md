@@ -2,6 +2,8 @@
 
 A secure command-line interface (CLI) tool for managing your passwords efficiently.
 
+[Github Repo Link](https://github.com/Ajinkyap331/password-manager-cli)
+
 ## Features
 
 - **End-to-End Encryption**: All passwords are encrypted with **AES-256-GCM** using a Master Password.
@@ -65,6 +67,14 @@ To remove a password permanently:
 pmc delete <index>
 ```
 
+### 6. Serving via HTTP
+Start a local HTTP server to interact with other applications (e.g., UI or browser extensions).
+
+```bash
+pmc serve
+```
+*Starts a server at `http://localhost:7474`. You can query passwords via `GET /password?url=<url>`.*
+
 ---
 
 ### Security Tip: The Master Password
@@ -76,7 +86,7 @@ The first time you use PMC, you'll create a **Master Password**.
 
 Contributions are welcome! If you'd like to improve PMC, please follow these steps:
 
-1. **Fork the repository** on GitHub.
+1. **[Fork the repository](https://github.com/Ajinkyap331/password-manager-cli)** on GitHub.
 2. **Clone your fork** locally: `git clone https://github.com/YOUR_USERNAME/password-manager-cli.git`.
 3. **Create a new branch** for your feature or bugfix: `git checkout -b feature-name`.
 4. **Make your changes** and ensure everything works as expected.
